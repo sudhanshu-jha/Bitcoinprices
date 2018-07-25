@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <head style="margin:20px;">
+        <title>Top cryptocurrencies   Price </title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    </head> 
+
+    <body style="margin:20px;">
+
+        <div class="alert alert-dark" role="alert">
+            <span style="font-size:30px;"><b>Top Cryptocurrencies price</b></span><span style="font-size:20px;"><a href="#" target="_blank"> by sudhanshujha</a></span>
+        </div>
+
+        <div class="list-group">
+            <div class="list-group-item list-group-item-primary">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label><b>Name</b></label>
+                    </div>
+                    <div class="col-md-3">
+                        <label><b>USD Price</b></label>
+                    </div>
+                    <div class="col-md-3">
+                        <label><b>BTC Price</b></label>
+                    </div>
+                    <div class="col-md-3">
+                        <label><b>Change in Last Hour</b></label>
+                    </div>
+                </div>
+            </div>
+            {% for coin in crypto_data %}
+            <div class="list-group-item list-group-item-{% if coin.percent_change_1h.0 == '-'%}danger{% else %}success{% endif %}">
+                <div class="row">
+                    <div class="col-md-3">
+                        {{coin.name}}
+                    </div>
+                    <div class="col-md-3">
+                        {{coin.price_usd}}
+                    </div>
+                    <div class="col-md-3">
+                        {{coin.price_btc}}
+                    </div>
+                    <div class="col-md-3">
+                        {{coin.percent_change_1h}}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </body>
+</html>
