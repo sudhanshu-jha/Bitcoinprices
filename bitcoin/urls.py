@@ -1,8 +1,8 @@
-from django.urls import path
+from django.conf.urls import include, url
 from . import views
-
+from django.contrib import admin
 app_name = 'bitcoin'
 
 urlpatterns = [
-    path('', views.index, name="index"),
+    url('', views.index, name="index"),
 ]
