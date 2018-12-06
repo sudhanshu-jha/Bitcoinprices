@@ -1,9 +1,9 @@
 <html>
     <head>
         <head style="margin:20px;">
-        <title>Top cryptocurrencies   Price </title>
+        <title style="">Top cryptocurrencies Price </title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    </head> 
+        </head>
 
     <body style="margin:20px;">
 
@@ -14,6 +14,9 @@
         <div class="list-group">
             <div class="list-group-item list-group-item-primary">
                 <div class="row">
+                    <div class="col-md-3">
+                        <label><b>#</b></label>
+                    </div>
                     <div class="col-md-3">
                         <label><b>Name</b></label>
                     </div>
@@ -31,6 +34,9 @@
             {% for coin in crypto_data %}
             <div class="list-group-item list-group-item-{% if coin.percent_change_1h.0 == '-'%}danger{% else %}success{% endif %}">
                 <div class="row">
+                    <div class="col-md-3">
+                        {{forloop.counter}}
+                    </div>
                     <div class="col-md-3">
                         {{coin.name}}
                     </div>
