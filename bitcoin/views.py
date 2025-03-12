@@ -14,8 +14,22 @@ def log_function_call(func):
         return result
     return wrapper
 
-@index = log_function_call(index)
-@get_crypto_data = log_function_call(get_crypto_data)
+@log_function_call
+def index(request):
+    try:
+        data = get_crypto_data()
+    except Exception as e:
+        print(e)
+        data = dict()
+
+    data["crypto_data"] = get_crypto_data()
+    return render(request, "bitcoin/index.html", data)
+
+
+@log_function_call
+def get_crypto_data():
+    api_url = "https://api.coinmarketcap.com/v1/ticker/?limit=2068"
+    try:
 
 
 
