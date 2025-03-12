@@ -38,7 +38,7 @@ def index(request):
     try:
         data = get_crypto_data()
     except Exception as e:
-        print(e)
+        logger.error(f"Error fetching crypto data: {e}")
         data = dict()
 
     data["crypto_data"] = get_crypto_data()
