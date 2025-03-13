@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Run PR-Agent in Docker
         run: |
-          docker run --rm -it \
+          docker run --rm \
             -e CONFIG.GIT_PROVIDER=github \
             -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
             -e GITHUB.USER_TOKEN=${{ secrets.ACCESS_TOKEN }} \
