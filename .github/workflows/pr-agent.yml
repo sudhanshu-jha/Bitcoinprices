@@ -1,17 +1,71 @@
-name: PR Agent Review
+name: PR-Agent Review and Command Execution
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]  # Runs automatically when PR is created or updated
+  issue_comment:
+    types: [created]  # Runs when a new comment is added to a PR
 
 jobs:
-  pr-review:
+  pr-agent:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Run PR-Agent in Docker
+      - name: Extract PR Details
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            PR_URL="${{ github.event.pull_request.html_url }}"
+          else
+            PR_URL=$(jq -r ".issue.pull_request.url" <<< '${{ toJson(github.event) }}' | sed 's/api.github.com\/repos/github.com/g' | sed 's/pulls/pull/')
+          fi
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+
+      - name: Get Latest PR Comment (If triggered by comment)
+        if: github.event_name == 'issue_comment'
+        run: |
+          COMMENT=$(jq -r ".comment.body" <<< '${{ toJson(github.event) }}')
+          echo "COMMENT=$COMMENT" >> $GITHUB_ENV
+
+      - name: Run Initial PR Review on PR Creation
+        if: github.event_name == 'pull_request'
         run: |
           docker run --rm \
             -e CONFIG.GIT_PROVIDER=github \
             -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
-            -e GITHUB.USER_TOKEN=${{ secrets.ACCESS_TOKEN }} \
-            codiumai/pr-agent:latest --pr_url=${{ github.event.pull_request.html_url }} review
+            -e GITHUB.USER_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            codiumai/pr-agent:latest --pr_url=${PR_URL} review
+
+      - name: Process PR-Agent Commands from Comments
+        if: github.event_name == 'issue_comment'
+        run: |
+          if [[ "$COMMENT" == *"/review"* ]]; then
+            docker run --rm \
+              -e CONFIG.GIT_PROVIDER=github \
+              -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e GITHUB.USER_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+              codiumai/pr-agent:latest --pr_url=${PR_URL} review
+          fi
+
+          if [[ "$COMMENT" == *"/summarize"* ]]; then
+            docker run --rm \
+              -e CONFIG.GIT_PROVIDER=github \
+              -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e GITHUB.USER_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+              codiumai/pr-agent:latest --pr_url=${PR_URL} summarize
+          fi
+
+          if [[ "$COMMENT" == *"/describe"* ]]; then
+            docker run --rm \
+              -e CONFIG.GIT_PROVIDER=github \
+              -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e GITHUB.USER_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+              codiumai/pr-agent:latest --pr_url=${PR_URL} describe
+          fi
+
+          if [[ "$COMMENT" == *"/refactor"* ]]; then
+            docker run --rm \
+              -e CONFIG.GIT_PROVIDER=github \
+              -e OPENAI.KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e GITHUB.USER_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+              codiumai/pr-agent:latest --pr_url=${PR_URL} refactor
+          fi
