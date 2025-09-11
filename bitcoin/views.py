@@ -18,6 +18,6 @@ def get_crypto_data():
         data = requests.get(api_url).json()
     except Exception as e:
         print(e)
-        data = dict()
+        data = []
 
     return data
